@@ -1,7 +1,7 @@
 with Ada.Text_IO; use Ada.Text_IO;
 
 procedure Main is
-   num_thread : constant Integer := 4;
+   num_thread : constant Integer := 3;
    pragma Assert (num_thread > 0);
 
    type Can_Stop_Arr is array (1..num_thread) of Boolean;
@@ -24,10 +24,8 @@ procedure Main is
          Stoper.Timer := Timer;
          Stoper.id := id;
       end Start_Stoper;
-      Put_Line("Stoper " & id'Img & " started with Timer: " & Timer'Img);
       delay Timer;
       Can_Stop(id) := True;
-      Put_Line("Stoper " & id'Img & " finished.");
    end Stoper;
 
    task body My_threads is
@@ -41,8 +39,6 @@ procedure Main is
          My_threads.id := id;
       end Start;
 
-      Put_Line("Thread " & id'Img & " started with Step: " & Step'Img);
-
       loop
          Sum := Sum + Count * Step;
          Count := Count + 1;
@@ -50,16 +46,14 @@ procedure Main is
       end loop;
 
       Put_Line(id'Img & " " & Sum'Img & " " & Count'Img);
-      Put_Line("Thread " & id'Img & " finished.");
    end My_threads;
 
-   Timers_array : array (1..num_thread) of Standard.Duration := (10.0, 5.0, 7.0, 7.0);
+   Timers_array : array (1..num_thread) of Standard.Duration := (8.0, 5.0, 7.0);
    Threads_array : array (1..num_thread) of My_threads;
    Stoper_array : array (1..num_thread) of Stoper;
 
 begin
    for i in Threads_array'Range loop
-      Put_Line("Starting thread " & i'Img);
       Threads_array(i).Start(2, i);
       Stoper_array(i).Start_Stoper(Timers_array(i), i);
    end loop;
